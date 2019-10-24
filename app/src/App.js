@@ -6,6 +6,8 @@ import AddTrackerForm from "./components/AddTrackerContainer/AddTrackerContainer
 import StatContainer from "./components/StatContainer/StatContainer";
 import "./App.css";
 import AppBarContainer from "./components/AppBarContainer/AppBarContainer";
+import { ContextProvider } from "./Context";
+import { UpdateContextProvider } from "./UpdateContext";
 
 const theme = createMuiTheme({
   palette: {
@@ -16,10 +18,14 @@ const theme = createMuiTheme({
 const App = () => {
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AppBarContainer />
-      <AddTrackerForm />
-      <StatContainer />
+      <ContextProvider>
+        <UpdateContextProvider>
+          <CssBaseline />
+          <AppBarContainer />
+          <AddTrackerForm />
+          <StatContainer />
+        </UpdateContextProvider>
+      </ContextProvider>
     </ThemeProvider>
   );
 };
