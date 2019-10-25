@@ -16,11 +16,10 @@ const StatContainer = props => {
   const cardList = [];
   const classes = useStyles();
 
-  Object.keys(trackerList).forEach(tracker => {
-    cardList.push(<TrackerCard tracker={trackerList[tracker]} />);
+  Object.keys(trackerList).forEach((tracker, index) => {
+    cardList.push(<TrackerCard key={index} tracker={trackerList[tracker]} />);
   });
 
-  console.log(cardList);
   return (
     <Container className={classes.cardGrid} maxWidth="md">
       {cardList}

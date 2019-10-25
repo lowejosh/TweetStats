@@ -35,6 +35,7 @@ const AddTrackerContainer = props => {
   const [keyword, setKeyword] = useState("");
   const [popperOpen, setPopperOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [popperText, setPopperText] = useState(null);
   const [invalid, setInvalid] = useState(false);
   const { socket } = useContext(Context);
   const { update, setUpdate, trackerList } = useContext(UpdateContext);
@@ -42,10 +43,15 @@ const AddTrackerContainer = props => {
   const addTracker = e => {
     const regex = /^#\w+$/;
     let tweetUpdateIndex = 2;
-    if (!keyword.match(regex)) {
+    if (!keyword.match(regex) || trackerList[keyword]) {
       setAnchorEl(e.currentTarget);
       setPopperOpen(true);
       setInvalid(true);
+      if (trackerList[keyword]) {
+        setPopperText(`You are already tracking ${keyword}`);
+      } else {
+        setPopperText("Please enter a valid hashtag");
+      }
       setTimeout(() => {
         setInvalid(false);
         setPopperOpen(false);
@@ -58,6 +64,10 @@ const AddTrackerContainer = props => {
       socket.on(keyword, data => {
         trackerList[keyword].languages[data.lang]++;
         trackerList[keyword].tweetCount++;
+
+        if (data.hasImage) {
+          trackerList[keyword].mediaCount++;
+        }
 
         // only keep the last 50 tweets
         if (trackerList[keyword].tweetCount < 50) {
@@ -116,7 +126,7 @@ const AddTrackerContainer = props => {
               <Fade {...TransitionProps} timeout={350}>
                 <Paper>
                   <Typography className={classes.typography}>
-                    Please enter a valid hashtag
+                    {popperText}
                   </Typography>
                 </Paper>
               </Fade>
