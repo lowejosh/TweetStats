@@ -46,7 +46,7 @@ const TrackerCard = ({ tracker }) => {
   const fetchStats = async tag => {
     const hashStatsURL = `${baseURL}:8001/hash-stats/${tag}`;
     let res = await axios.get(hashStatsURL);
-    setData(res.data.stats[0]);
+    setData(res.data);
     setFetching(false);
   };
 
