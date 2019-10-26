@@ -143,11 +143,6 @@ const TrackerCard = ({ tracker }) => {
         {Math.round(data.images * 100)}% contain images
         <br /> */}
       </CardContent>
-      <CardActions>
-        <Button size="small" color="primary">
-          Remove
-        </Button>
-      </CardActions>
     </Card>
   );
 };

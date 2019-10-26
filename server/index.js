@@ -49,11 +49,10 @@ app.get("/hash-stats/:hashtag", (req, res) => {
   const hashtag = req.params.hashtag;
 
   // try to retrieve from local redis
-  client.get(`hashtag:${hashtag}`, async (redisError, redisRes) => {
+  redisClient.get(`hashtag:${hashtag}`, async (redisError, redisRes) => {
     if (redisRes && !redisError) {
       console.log(`${hashtag} data found in redis cache`);
       const resultJSON = JSON.parse(redisRes);
-      console.log(resultJSON); //TODO remove
       return res.status(200).json(resultJSON); // return the result
     } else {
       // else try to retrieve from azure storage
@@ -63,7 +62,7 @@ app.get("/hash-stats/:hashtag", (req, res) => {
         hashtag,
         row,
         async (error, result, response) => {
-          if (!error) {
+          if (!error && result.tweets && result.retweets && result.images) {
             // format the payload
             console.log(`retrieved ${hashtag} entity from ${table} table`);
             const payload = formatHashstatResponse(result);
@@ -76,6 +75,7 @@ app.get("/hash-stats/:hashtag", (req, res) => {
             res.json(payload);
           } else {
             // pull from web if it doesnt exist
+            console.log('retrieving data from web api');
             const URL = `https://api.ritekit.com/v1/stats/multiple-hashtags?tags=${hashtag}&client_id=701bd27d1221d4c542398832e3367c8976350a1e1cbe`;
             await axios.get(URL).then(async data => {
               if (data.data) {
@@ -83,7 +83,7 @@ app.get("/hash-stats/:hashtag", (req, res) => {
 
                 // update redis cache
                 console.log(`${hashtag} cache updated`);
-                saveDataToCache(hashtag, payload);
+                saveDataToCache(hashtag, stats);
 
                 // update azure table
                 const entity = {
@@ -131,7 +131,7 @@ const formatHashstatResponse = data => {
 
 const expiry = 259200;
 const saveDataToCache = (hashtag, data) => {
-  client.setex(`hashtag:${hashtag}`, expiry, JSON.stringify(data));
+  redisClient.setex(`hashtag:${hashtag}`, expiry, JSON.stringify(data));
 };
 
 // Client socket connection and twitter streams (socketio)
