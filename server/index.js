@@ -7,6 +7,7 @@ const port = 8001;
 const dotenv = require("dotenv");
 const azure = require("azure-storage");
 const redis = require("redis");
+const path = require("path");
 
 // setup
 dotenv.config();
@@ -75,7 +76,7 @@ app.get("/hash-stats/:hashtag", (req, res) => {
             res.json(payload);
           } else {
             // pull from web if it doesnt exist
-            console.log('retrieving data from web api');
+            console.log("retrieving data from web api");
             const URL = `https://api.ritekit.com/v1/stats/multiple-hashtags?tags=${hashtag}&client_id=701bd27d1221d4c542398832e3367c8976350a1e1cbe`;
             await axios.get(URL).then(async data => {
               if (data.data) {

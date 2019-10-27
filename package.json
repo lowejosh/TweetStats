@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "cluster": "^0.7.7",
+    "sticky-session": "^1.1.2"
+  }
+}
